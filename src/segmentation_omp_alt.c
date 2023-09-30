@@ -16,6 +16,8 @@
     Segmentação de imagens baseado em cor e implementada via algoritmo de agrupamento k-means
 
     Disponível em https://github.com/gabrielemirando/image-segmentation.git
+
+    Mais informações no README.md
     
 ================================================================================================*/
 /*================================================================================================
@@ -136,7 +138,7 @@ void init_centers(byte_t *data, double *centers, int n_px, int n_ch, int n_clus)
 
     for (k = 0; k < n_clus; k++)
     {
-        rnd = rand() % n_px;
+        rnd = rand() % n_px; // dificulta a vetorização/paralelização do laço
 
         for (ch = 0; ch < n_ch; ch++)
         {
@@ -202,6 +204,9 @@ void update_centers(byte_t *data, double *centers, int *labels, double *dists, i
 
     // Resetting centers and initializing clusters counters
 
+    // Computação relativamente simples (poucas iterações), não justificaria a paralelização 
+    // para ganho significativo de desempenho em uma análise de escalabilidade forte
+    #pragma omp parallel for private(k, ch)
     for (k = 0; k < n_clus; k++)
     {
         for (ch = 0; ch < n_ch; ch++)
@@ -242,7 +247,7 @@ void update_centers(byte_t *data, double *centers, int *labels, double *dists, i
         {
             for (ch = 0; ch < n_ch; ch++)
             {
-                centers[k * n_ch + ch] /= counts[k];
+                centers[k * n_ch + ch] /= counts[k]; // impede a vetorização/paralelização do laço
             }
         }
         else

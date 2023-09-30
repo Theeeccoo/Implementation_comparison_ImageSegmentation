@@ -23,6 +23,8 @@ will produce:
 
 * *omp.out*: the parallel version implemented using OpenMP.
 
+* *omp_alt.out*: an alternative version of the parallel one.
+
 Some examples of usage are:
 
 * ```./serial.out -k 4 imgs/test_s.jpg```: to execute the serial program with
@@ -30,6 +32,9 @@ Some examples of usage are:
 
 * ```./omp.out -k 4 -t 4 imgs/test_s.jpg```: to execute the parallel version
   with four clusters using four CPU threads.
+
+* ```./omp_alt.out imgs/test_s.jpg```: to execute the alternative parallel version
+  using the default number of clusters and CPU threads.
 
 ## License
 
