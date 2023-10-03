@@ -11,7 +11,7 @@
 #define DEFAULT_N_CLUSTS 4
 #define DEFAULT_MAX_ITERS 150
 #define DEFAULT_N_THREADS 2
-#define DEFAULT_OUT_PATH "result.jpg"
+//#define DEFAULT_OUT_PATH "result_omp.jpg"
 
 double get_time();
 void print_usage(char *pgr_name);
@@ -20,7 +20,7 @@ void print_exec(int width, int height, int n_ch, int n_clus, int n_threads, int 
 int main(int argc, char **argv)
 {
     char *in_path = NULL;
-    char *out_path = DEFAULT_OUT_PATH;
+    char *out_path = NULL;
     byte_t *data;
     int width, height, n_ch;
     int n_clus = DEFAULT_N_CLUSTS;
@@ -58,6 +58,7 @@ int main(int argc, char **argv)
     }
 
     in_path = argv[optind];
+    out_path = argv[2];
 
     // Validating input parameters
 
