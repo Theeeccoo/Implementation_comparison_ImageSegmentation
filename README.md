@@ -4,6 +4,10 @@ The objective of this project is to develop a program for color-based image
 segmentation using the standard k-means clustering algorithm and to speed up the
 execution by parallelizing the code using OpenMP.
 
+An alternative version of the original parallel version was developed in order
+to explore vectorization as a means to decrease even further the execution times
+and, consequently, enhance the speed up.
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your
@@ -23,7 +27,7 @@ will produce:
 
 * *omp.out*: the parallel version implemented using OpenMP.
 
-* *omp_alt.out*: an alternative version of the parallel one.
+* *omp_alt.out*: an alternative version of the parallel one that uses vectorization.
 
 Some examples of usage are:
 
@@ -33,8 +37,9 @@ Some examples of usage are:
 * ```./omp.out -k 4 -t 4 imgs/test_s.jpg```: to execute the parallel version
   with four clusters using four CPU threads.
 
-* ```./omp_alt.out imgs/test_s.jpg```: to execute the alternative parallel version
-  using the default number of clusters and CPU threads.
+* ```./omp_alt.out imgs/test_uhr.jpg result_omp_alt.jpg```: to execute the alternative 
+  parallel version using the default number of clusters and CPU threads and save the
+  output on the root folder as result_omp_alt.jpg.
 
 ## License
 

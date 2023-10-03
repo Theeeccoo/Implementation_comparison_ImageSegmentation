@@ -13,7 +13,7 @@
 
     Aplicação:
 
-    Segmentação de imagens baseado em cor e implementada via algoritmo de agrupamento k-means
+    Segmentação de imagens baseada em cor e implementada via algoritmo de agrupamento k-means
 
     Disponível em https://github.com/gabrielemirando/image-segmentation.git
 
@@ -138,7 +138,7 @@ void init_centers(byte_t *data, double *centers, int n_px, int n_ch, int n_clus)
 
     for (k = 0; k < n_clus; k++)
     {
-        rnd = rand() % n_px; // dificulta a vetorização/paralelização do laço
+        rnd = rand() % n_px; // impede a vetorização/paralelização do laço
 
         for (ch = 0; ch < n_ch; ch++)
         {
@@ -221,21 +221,23 @@ void update_centers(byte_t *data, double *centers, int *labels, double *dists, i
 
     // A diretiva private garante que cada thread tenha sua própria cópia das variáveis 
     // px, ch e min_k, evitando assim possíveis condições de disputa por acesso a um
-    // mesmo espaço de mem´roia
+    // mesmo espaço de memória
     //
     // Já a diretiva reduction realiza o mesmo para os arrays centers e counts, a única 
     // diferença sendo que existe dependência entre as computações feitas em cada thread 
     // e que, por isso, precisam ser somadas ao fim da execução do loop)
-    #pragma omp parallel for private(px, ch, min_k) reduction(+:centers[:n_clus * n_ch],counts[:n_clus])
+    #pragma omp parallel for private(px, ch, min_k) // reduction(+:centers[:n_clus * n_ch],counts[:n_clus])
     for (px = 0; px < n_px; px++)
     {
         min_k = labels[px];
 
         for (ch = 0; ch < n_ch; ch++)
         {
+            #pragma omp atomic update
             centers[min_k * n_ch + ch] += data[px * n_ch + ch];
         }
 
+        #pragma omp atomic update
         counts[min_k]++;
     }
 
