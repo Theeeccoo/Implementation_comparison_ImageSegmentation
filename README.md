@@ -78,7 +78,7 @@ The following tools are required in order to start the installation.
 ## Usage
 5 parameters are required to execute the code, which are:
 
-  1. O arquivo executável: `./kmeans`
+  1. The executable file: `./kmeans`
   2. Image that will be segmented in the ppm extension: `./pix/frog.ppm`
   3. Number of clusters in the K-mens algorithm, which means the number of regions in the final segmented image: `3`
   4. Number of iterations in K-means algorithm: `7`
