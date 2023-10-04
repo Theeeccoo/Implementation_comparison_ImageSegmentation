@@ -1,3 +1,64 @@
+/*================================================================================================
+
+    Projeto 1 - Implementação Paralela de uma Técnica de Inteligência Artificial
+
+    Alunos: Caio Eduardo Ramos Arães
+            Danielle Dias Vieira
+            Guilherme Quadros Werner
+            João Augusto dos Santos Silva
+            Thiago de Campos Ribeiro Nolasco
+
+================================================================================================*/
+/*================================================================================================
+
+    Aplicação:
+
+    Segmentação de imagens baseada em cor e implementada via algoritmo de agrupamento k-means
+
+    Disponível em https://github.com/archity/segmentation-kmeans-c
+
+    Mais informações no README.md sobre a aplicação e o algoritmo k-means.
+    
+================================================================================================*/
+/*================================================================================================
+
+    Resultados:
+
+    Informações do computador pessoal em que foram gerados os resultados apresentados:
+    - CPU: Intel i7-9750H (12) @ 4.500GHz
+    - Memory: 32GB 
+    - Compiler: gcc 10.5.0 - Suporta OpenMP 4.5
+    - OS: Pop!_OS 20.04 LTS x86_64 
+
+    Resultados em máquina pessoal:
+
+    1. Sequencial ----------------------------------------------- 38,0154s
+
+    2. Paralelo (2 threads) ------------------------------------- 23,0949s
+
+    3. Paralelo (4 threads) ------------------------------------- 15,6061s
+
+    4. Paralelo (8 threads) ------------------------------------- 12,999s
+
+    ts = 38,0154s
+    tp = 12,999s
+
+    Ganho = ts / tp = 2,9244s
+
+================================================================================================*/
+/*================================================================================================
+
+    Análise de Resultados:
+
+    Foi realizada a tentativa de alterar o escalonamento (dynamic ou static) das iterações nos loops, 
+    porém não houve diferença em relação aos tempos de execução.
+
+    Os resultados acima são resultantes da média de 10 execuções para cada número de threads.
+
+    - Falar qual imagem utilizamos no teste.
+
+================================================================================================*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -51,7 +112,18 @@ void AllocateRandomClusters(bit *clusters, short clustercount)
 
 void RecalculateClusters(bit *bitmap, bit *clusters, short clustercount, bit *labels, int rows, int cols)
 {
-  #pragma omp parallel for schedule(static)//private(clusters)
+  /*
+      Como a aplicação envolve a segmentação de uma imagem, é necessário iterar por cada pixel da mesma.
+      Conforme os laços de repetição abaixo, estas iterações pelos pixels são realizadas e é uma boa oportunidade
+      para uma paralelização, pois atualmente a resolução e a qualidade das imagens vem aumentando, tornando
+      estes laços de repetições com muitas iterações.
+      A paralelização abaixo está sobre o loop externo que itera sobre os clusters. As variáveis count, pixelsum
+      são declaradas dentro do loop, logo já são privadas para cada thread.
+      A variável clusters não foi necessária a privativação, pois nenhuma iteração vai acessar duas posições
+      ao mesmo tempo, pois ela utiliza a variável "i" do loop mais externo, e esta variável é diferente para
+      cada thread.
+  */
+  #pragma omp parallel for
   for (int i = 0; i < clustercount; i++)
   {
     int count = 0;
@@ -110,7 +182,19 @@ void GetClusteredImage(bit *bitmap, bit *clustermap, bit *clusters, bit *labels,
   //printf("rows: %d\n", rows);
   ///printf("cols: %d\n", cols);
   
-  #pragma omp parallel for private(clusterIndex, pixel) schedule(static)
+  /*
+      Como a aplicação envolve a segmentação de uma imagem, é necessário iterar por cada pixel da mesma.
+      Conforme os laços de repetição abaixo, estas iterações pelos pixels são realizadas e é uma boa oportunidade
+      para uma paralelização, pois atualmente a resolução e a qualidade das imagens vem aumentando, tornando
+      estes laços de repetições com muitas iterações.
+      A paralelização abaixo está sobre o loop externo que itera sobre as linhas. As variáveis clusterIndex e pixel 
+      são marcadas como privadas para garantir que cada thread tenha suas próprias cópias dessas variáveis, para
+      não gerar conflito ao acessar o mesmo espaço de memória ao mesmo tempo. 
+      As variáveis clustermap e labels não foram privatizadas, pois nenhuma iteração vai acessar a mesma posição
+      destas variáveis, pois as iterações serão divididas entre as threads e o i e o j para acessar cada posição
+      serão diferentes.
+  */
+  #pragma omp parallel for private(clusterIndex, pixel)
   for (int i = 0; i < rows; i++)
   {
     for (int j = 0; j < cols; j++)
@@ -174,15 +258,13 @@ int main(int argc, char *argv[])
   FILE *ifp;
   bit *bitmap, *clustermap, *clusters, *labels;
   int ich1, ich2, rows, cols, maxval = 255, ppmraw;
-  int i, j, k, iterations;
+  int i, j, k, iterations, num_threads;
   short cluster_count;
 
-  omp_set_num_threads(8);
-
   /* Arguments */
-  if (argc != 4)
+  if (argc != 5)
   {
-    printf("\nUsage: %s file k iterations \n\n", argv[0]);
+    printf("\nUsage: %s file k iterations num_threads\n\n", argv[0]);
     exit(0);
   }
 
@@ -196,6 +278,10 @@ int main(int argc, char *argv[])
 
   cluster_count = atoi(argv[2]);
   iterations = atoi(argv[3]);
+  num_threads = atoi(argv[4]);
+
+  omp_set_num_threads(num_threads);
+  printf("\nRunning with %d threads\n", num_threads);
 
   if (cluster_count < 1 || iterations < 1)
   {
