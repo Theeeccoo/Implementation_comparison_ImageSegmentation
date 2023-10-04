@@ -1,15 +1,28 @@
-CC = gcc
-CC_FLAGS = -Wall
-CC_OMP = -fopenmp
+#######################################
+# Makefile PBM                        #
+#                                     #
+# E.B.                                #
+#######################################
 
-all: serial.out omp.out
+PROG = kmeans
+SRC = kmeans.c Util.c
+IMG_PATH = ./pix
+HEADERS = Util.h
 
-clean:
-	rm serial.out omp.out result.jpg
+all : kmeans
 
-serial.out: src/main_serial.c src/image_io.h src/image_io.c src/segmentation.h src/segmentation_serial.c
-	$(CC) $(CC_FLAGS) -o serial.out src/main_serial.c src/image_io.c src/segmentation_serial.c -lm
+# Variables for file compilation
+CC        =  gcc
+CFLAGS    =  -g -Wall -lm -fopenmp
+CPPFLAGS  =  -DDEBUG
 
-omp.out: src/main_omp.c src/image_io.h src/image_io.c src/segmentation.h src/segmentation_omp.c
-	$(CC) $(CC_FLAGS) $(CC_OMP) -o omp.out src/main_omp.c src/image_io.c src/segmentation_omp.c -lm
+kmeans: $(SRC) $(HEADERS)
+	$(CC) $(SRC) -o $(PROG) -I. $(CFLAGS)
+# time ./kmeans ./pix/uma-pintura-de-um-lago-de-montanha-com-uma-montanha-ao-fundo.ppm 3 7
+	time ./kmeans ./pix/frog.ppm 3 7
 
+clean :
+	@rm -f *.o
+
+cleanall : clean
+	@rm -f $(PROG)
