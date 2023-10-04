@@ -6,7 +6,7 @@ The K-Means algorithm is often used for image segmentation, where its objective 
 
 K-Means is sensitive to the initialization of centroids and can converge to local solutions. Therefore, it is common to run the algorithm several times with different initializations and choose the best solution.
 
-Coloured PPM images have been used as inputs and image segmentation has been implemented using K-means technique. A detailed report of the original code can be found in the archive [report](https://github.com/archity/segmentation-kmeans-c/blob/main/report.pdf).
+Coloured PPM images have been used as inputs and image segmentation has been implemented using K-means technique. A detailed report of the original code can be found in [report](https://github.com/archity/segmentation-kmeans-c/blob/main/report.pdf).
 
 As the application involves segmenting an image, it is necessary to iterate through each pixel of the image. According to the repetition loops below, these iterations across pixels are carried out and are a good opportunity for parallelization, as currently the resolution and quality of images are increasing, making these repetition loops with many iterations.
 
