@@ -48,15 +48,15 @@
 ================================================================================================*/
 /*================================================================================================
 
-    Análise de Resultados:
+    Observações:
 
-    Foi realizada a tentativa de alterar o escalonamento (dynamic ou static) das iterações nos loops, 
-    porém não houve diferença em relação aos tempos de execução.
+    Foi realizada a tentativa de alterar o escalonamento (dynamic ou static) das iterações nos 
+    loops, porém não houve diferença signficativa em relação aos tempos de execução.
 
     Os resultados acima são resultantes da média de 10 execuções para cada número de threads.
 
-    - Falar qual imagem utilizamos no teste.
-
+    A imagem utilizada nos resultados acima foi a mountain-lake.ppm, com 3 clusters e 7 iterações.
+ 
 ================================================================================================*/
 
 #include <stdlib.h>
